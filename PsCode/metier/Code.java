@@ -6,6 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import fr.pcentreprise.pcode.metier.commandes.Affecter;
+import fr.pcentreprise.pcode.metier.commandes.Ecriture;
+import fr.pcentreprise.pcode.metier.structures.FinStructure;
+import fr.pcentreprise.pcode.metier.structures.Si;
+import fr.pcentreprise.pcode.metier.structures.Sinon;
+import fr.pcentreprise.pcode.metier.structures.Structure;
 
 /**
  * La classe Code contient le programme et gere si il est valide
@@ -17,7 +27,7 @@ public class Code
 	/**
 	 * Liste des lignes du programme
 	 */
-	private List<String> listLigne;
+	private List<String> listLignes;
 	
 	/**
 	 * Liste des commandes du programme associées à leur ligne
@@ -25,37 +35,23 @@ public class Code
 	private Map<Integer, IExecutable> listCommandes;
 	
 	/**
-	 * Constructeur qui vérifie si le programme est bien écrit à partir d'une chaine de caractere
+	 * Attribut contenant les données
 	 */
-	public Code( String fichier )
-	{
-		this.listCommandes = new HashMap<Integer, IExecutable>();
-		
-		this.listLigne = new ArrayList<String>();
-		Scanner sc = new Scanner( fichier );
-		while( sc.hasNext() )
-			this.listLigne.add( sc.nextLine() );
-		sc.close();
-		/*
-		 * faire la fabrique pour vérifier si le programme est valide
-		 */
-	}
+	private Donnees donnees;
 	
 	/**
-	 * Constructeur qui vérifie si le programme est bien écrit à partir d'un fichier
+	 * Ligne du programme actuellement lu
 	 */
-	public Code( File fichier )
-	{
-		//A faire
-	}
+	private int ligneExec;
+	
+	private List<Integer> deroulement;
 	
 	/**
-	 * Constructeur Test
-	 * ne pas utiliser pour autre chose que des tests
+	 * Fabrique qui vérifie la validité du programme
 	 */
-	public Code()
+	public static Code fabriqueCode()
 	{
-		this(
+		String s = 
 		"ALGORITHME NomAlgo\n" +
 		"constante:\n" +
 		"\n" +
@@ -69,6 +65,7 @@ public class Code
 		"	ecrire ( \"etape 0\" )\n" +
 		"\n" +
 		"	si x=5 alors\n" +
+		"\n" +
 		"		ecrire ( \"etape 1\" )\n" +
 		"\n" +
 		"		si y=2 alors\n" +
@@ -91,9 +88,68 @@ public class Code
 		"		ecrire ( \"etape 7\" )\n" +
 		"	fsi\n" +
 		"\n"	 +
+		"\n"	 +
 		"	ecrire ( \"etape 8\" )\n" +
 		"\n" +
-		"FIN\n");
+		"FIN\n";
+		
+		return new Code( s );
+	}
+	
+	/**
+	 * Constructeur qui vérifie si le programme est bien écrit à partir d'une chaine de caractere
+	 */
+	public Code( String fichier )
+	{
+		this.donnees       = new Donnees();
+		this.listCommandes = new HashMap<Integer, IExecutable>();
+		this.listLignes    = new ArrayList<String>();
+		this.ligneExec     = 0;
+		this.deroulement   = new ArrayList<Integer>();
+		
+		Scanner sc = new Scanner( fichier );
+		String partie = "Algo"; //prend la valeur Algo puis Constantes puis Variables et enfin Programme pour définir les différentes parties du programme
+		
+		Stack<Structure> ouvertureStructures = new Stack<Structure>();
+		while( sc.hasNext() )
+		{
+			String s = sc.nextLine();
+			switch( partie )
+			{
+				case "Algo"      : if( s.equals( "constante:" ) ) partie = "Constante"; break;
+				case "Constante" : if( s.equals( "variable:"  ) ) partie = "Variable" ; break;
+				case "Variable"  : if( s.equals( "DEBUT"      ) ) partie = "Programme"; else this.creerVariable  ( s ); break;
+				case "Programme" : if( s.equals( "FIN"        ) ) partie = "Fini"     ; else this.creerExecutable( s, ouvertureStructures ); break;
+			}
+			
+			this.listLignes.add( s );
+			this.ligneExec++;
+		}
+		sc.close();
+		this.ligneExec = 0;
+		
+		/*for( int i=0; i<this.listLignes.size(); i++ )
+			if( this.listCommandes.get(i) != null )
+				System.out.println( i + " " + this.listCommandes.get( i ).toString() );
+			else
+				System.out.println( i + "" );
+		*/
+	}
+	
+	/**
+	 * Constructeur qui vérifie si le programme est bien écrit à partir d'un fichier
+	 */
+	public Code( File fichier )
+	{
+		//A faire
+	}
+	
+	/**
+	 * accesseur au donnees
+	 */
+	public Donnees getDonnees()
+	{
+		return this.donnees;
 	}
 	
 	/**
@@ -101,7 +157,12 @@ public class Code
 	 */
 	public String getLigne( int num )
 	{
-		return new String( this.listLigne.get( num-1 ) );
+		return new String( this.listLignes.get( num ) );
+	}
+	
+	public IExecutable getLigneExecutable( int num )
+	{
+		return this.listCommandes.get( num );
 	}
 	
 	/**
@@ -109,6 +170,100 @@ public class Code
 	 */
 	public List<String> getLignes()
 	{
-		return new ArrayList<String>( this.listLigne );
+		return new ArrayList<String>( this.listLignes );
+	}
+	
+	/**
+	 * méthode utilisé par les IExecutables pour récupérer la ligneExec
+	 */
+	public int getLigneExec()
+	{
+		return this.ligneExec;
+	}
+	
+	/**
+	 * méthode utilisé par les IExecutables pour modifier la ligneExec
+	 */
+	public void setLigneExec( int ligneExec )
+	{
+		this.ligneExec = ligneExec;
+	}
+	
+	public boolean next()
+	{
+		this.deroulement.add( this.ligneExec );
+		if( this.ligneExec < this.listLignes.size() )
+		{
+			if( this.listCommandes.get(this.ligneExec) != null )
+				this.listCommandes.get(this.ligneExec).executer();
+			else
+				this.ligneExec++;
+			return true;
+		}else
+			return false;
+	}
+	
+	/**
+	 * créé les variables dans les Données
+	 */
+	public void creerVariable( String expression )
+	{
+		if( expression.length() > 0 )
+		{
+			String exp = expression;
+			String type = exp.substring( exp.indexOf(':')+1 ).trim();
+			exp = expression.substring(0, exp.indexOf(':') ).trim();
+			String[] listeVariables = exp.split(",");
+			for( String var:listeVariables )
+				this.donnees.creer(var.trim(), type);
+		}
+	}
+	
+	/**
+	 * créé un IExecutable en fonction du @param
+	 */
+	public void creerExecutable( String expression, Stack<Structure> ouvertureStructure )
+	{
+		if( expression.length() > 0 )
+		{
+			String exp = expression;
+			if( exp.contains( "<--" ) && !exp.startsWith("ecrire") )
+			{
+				String var = exp.substring( 0, exp.indexOf( "<--" ) ).trim();
+				Object obj = Interpreteur.resoudre( exp.substring( exp.indexOf( "<--" )+3 ).trim() );
+				this.listCommandes.put(this.ligneExec, new Affecter( var, obj ));
+			}
+			
+			if( exp.trim().startsWith("ecrire") )
+			{
+				Pattern p = Pattern.compile( "[(](.*)[)]$" );
+				Matcher m = p.matcher( exp );
+				while( m.find() )
+					exp = m.group( 1 ).trim();
+				this.listCommandes.put(this.ligneExec, new Ecriture( exp ));
+			}
+			
+			if( exp.trim().startsWith( "si " ) )
+			{
+				int start = exp.indexOf("si ")+3;
+				int end   = exp.indexOf("alors");
+				exp = exp.substring(start, end);
+				Si c = new Si( this.ligneExec,  exp.trim() );
+				ouvertureStructure.push( c );
+				this.listCommandes.put( this.ligneExec, c );
+			}
+			
+			if( exp.trim().equals( "sinon" ) )
+			{
+				this.listCommandes.put(this.ligneExec, new Sinon( (Si) ouvertureStructure.lastElement() ) );
+				((Si) ouvertureStructure.peek()).setNumSinon( this.ligneExec );
+			}
+			
+			if( exp.trim().equals( "fsi" ) )
+			{
+				this.listCommandes.put(this.ligneExec, new FinStructure( (Si) ouvertureStructure.lastElement() ) );
+				((Si) ouvertureStructure.pop()).setNumFin( this.ligneExec );
+			}
+		}
 	}
 }

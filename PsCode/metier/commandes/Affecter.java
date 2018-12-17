@@ -10,6 +10,7 @@ import fr.pcentreprise.pcode.metier.IExecutable;
  */
 public class Affecter implements IExecutable
 {
+	
 	/**
 	 * nom de la variable à modifier
 	 */
@@ -37,7 +38,18 @@ public class Affecter implements IExecutable
 	@Override
 	public void executer()
 	{
-		Controleur.getInstance().getDonnees().affecter(this.var, this.valeur);
+		IExecutable.code.getDonnees().affecter(this.var, this.valeur);
+		IExecutable.code.setLigneExec( IExecutable.code.getLigneExec()+1 );
+	}
+	
+	public String toString()
+	{
+		return var + " <-- " + valeur;
 	}
 
+
+	public int getNextLigne()
+	{
+		return  code.getLigneExec()+1 ;
+	}
 }
