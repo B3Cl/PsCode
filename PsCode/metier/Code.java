@@ -1,6 +1,8 @@
-package fr.pcentreprise.pcode.metier;
-
 import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+package fr.pcentreprise.pcode.metier;
 import fr.pcentreprise.pcode.metier.commandes.Affecter;
 import fr.pcentreprise.pcode.metier.commandes.Ecriture;
 import fr.pcentreprise.pcode.metier.structures.FinStructure;
@@ -47,59 +50,47 @@ public class Code
 	private List<Integer> deroulement;
 	
 	/**
-	 * Fabrique qui vérifie la validité du programme
+	 * Fabrique qui vérifie la validité du programme à interpréter
 	 */
-	public static Code fabriqueCode()
+	public static Code fabriqueCode(File fichier)
 	{
-		String s = 
-		"ALGORITHME NomAlgo\n" +
-		"constante:\n" +
-		"\n" +
-		"variable:\n" +
-		"	x, y : entier\n" +
-		"\n" +
-		"DEBUT\n" +
-		"	x <-- 5\n" +
-		"	y <-- 7\n" +
-		"\n" +
-		"	ecrire ( \"etape 0\" )\n" +
-		"\n" +
-		"	si x=5 alors\n" +
-		"\n" +
-		"		ecrire ( \"etape 1\" )\n" +
-		"\n" +
-		"		si y=2 alors\n" +
-		"			ecrire ( \"etape 2\" )\n" +
-		"		fsi\n" +
-		"\n"		 +
-		"		ecrire ( \"etape 3\" )\n" +
-		"\n"		 +
-		"		si y=2 alors\n" +
-		"			ecrire ( \"etape 4\" )\n" +
-		"		sinon\n" +
-		"			ecrire ( \"etape 5\" )\n" +
-		"		fsi\n" +
-		"\n"		 +
-		"	fsi\n" +
-		"\n"	 +
-		"	si y=7 alors\n" +
-		"		ecrire ( \"etape 6\" )\n" +
-		"	sinon\n" +
-		"		ecrire ( \"etape 7\" )\n" +
-		"	fsi\n" +
-		"\n"	 +
-		"\n"	 +
-		"	ecrire ( \"etape 8\" )\n" +
-		"\n" +
-		"FIN\n";
-		
-		return new Code( s );
+		try
+		{
+			String sRet = "" ;
+			
+			InputStream ipsP = this.getClass().getResourceAsStream(fichier);
+			InputStreamReader ipsrP = new InputStreamReader(ipsP);
+			BufferedReader fichierP = new BufferedReader(ipsrP);
+			
+			String partie = "Algo"; //prend la valeur Algo puis Constantes puis Variables et enfin Programme pour définir les différentes parties du programme
+			String ligne  = null  ;
+			
+			while ((ligne = fichierP.readLine()) != null)
+			{
+				sRet += ligne + "\n";
+			
+				switch( partie )
+				{
+					case "Algo"      : if( s.equals( "constante:" ) ) partie = "Constante"; break ;
+					case "Constante" : if( s.equals( "variable:"  ) ) partie = "Variable" ; break ;
+					case "Variable"  : if( s.equals( "DEBUT"      ) ) partie = "Programme"; break ;
+					case "Programme" : if( s.equals( "FIN"        ) ) partie = "Fini"     ; break ;
+				}
+			}
+			sc.close();
+			
+			if (partie.equals("Fini"))
+				return new Code ( sRet );
+			else
+				return null;
+		}
+		catch (Exception exc) {}
 	}
 	
 	/**
-	 * Constructeur qui vérifie si le programme est bien écrit à partir d'une chaine de caractere
+	 * Constructeur qui construit le code à partir d'une chaine de caractère envoyée par la fabriqueCode
 	 */
-	public Code( String fichier )
+	private Code( String fichier )
 	{
 		this.donnees       = new Donnees();
 		this.listCommandes = new HashMap<Integer, IExecutable>();
@@ -134,14 +125,6 @@ public class Code
 			else
 				System.out.println( i + "" );
 		*/
-	}
-	
-	/**
-	 * Constructeur qui vérifie si le programme est bien écrit à partir d'un fichier
-	 */
-	public Code( File fichier )
-	{
-		//A faire
 	}
 	
 	/**
