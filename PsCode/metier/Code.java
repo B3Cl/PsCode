@@ -71,10 +71,10 @@ public class Code
 			
 				switch( partie )
 				{
-					case "Algo"      : if( s.equals( "constante:" ) ) partie = "Constante"; break ;
-					case "Constante" : if( s.equals( "variable:"  ) ) partie = "Variable" ; break ;
-					case "Variable"  : if( s.equals( "DEBUT"      ) ) partie = "Programme"; break ;
-					case "Programme" : if( s.equals( "FIN"        ) ) partie = "Fini"     ; break ;
+					case "Algo"      : if( ligne.equals( "constante:" ) ) partie = "Constante"; break ;
+					case "Constante" : if( ligne.equals( "variable:"  ) ) partie = "Variable" ; break ;
+					case "Variable"  : if( ligne.equals( "DEBUT"      ) ) partie = "Programme"; break ;
+					case "Programme" : if( ligne.equals( "FIN"        ) ) partie = "Fini"     ; break ;
 				}
 			}
 			sc.close();
