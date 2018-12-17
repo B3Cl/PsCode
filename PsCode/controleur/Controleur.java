@@ -1,7 +1,9 @@
 package fr.pcentreprise.pcode.controleur;
 
 import fr.pcentreprise.pcode.metier.Code;
+import fr.pcentreprise.pcode.metier.Console;
 import fr.pcentreprise.pcode.metier.Donnees;
+import fr.pcentreprise.pcode.metier.Interpreteur;
 import fr.pcentreprise.pcode.metier.commandes.Affecter;
 
 /**
@@ -22,22 +24,16 @@ public class Controleur
 	private Code code;
 	
 	/**
-	 * Attribut contenant les données
+	 * accesseur au code
 	 */
-	private Donnees donnees;
+	public Code getCode()
+	{
+		return this.code;
+	}
 	
 	private Controleur()
 	{
-		this.code = new Code();
-		this.donnees = new Donnees();
-	}
-	
-	/**
-	 * Methode qui retourne l'instance des donnees
-	 */
-	public Donnees getDonnees()
-	{
-		return this.donnees;
+		this.code = Code.fabriqueCode();
 	}
 	
 	/**
@@ -50,20 +46,8 @@ public class Controleur
 	
 	public static void main(String[] args)
 	{
-		instance.donnees.creer("A", "entier");
-		instance.donnees.creer("A", "entier");
-		instance.donnees.creer("B", "entier");
-		System.out.println( instance.donnees );
-		System.out.println( "-----------------" );
-		
-		new Affecter( "A", 5).executer();
-		new Affecter( "B", 7).executer();
-		
-		System.out.println( instance.donnees );
-		System.out.println( "-----------------" );
-		
-		/*for( String s:instance.code.getLignes() )
-			System.out.println(s);
-		*/
+		while( instance.code.next() ) {}
+		System.out.println( Console.getInstance() );
+		System.out.println( instance.code.getDonnees() );
 	}
 }
