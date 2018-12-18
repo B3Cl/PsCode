@@ -23,14 +23,14 @@ public abstract class Structure implements IExecutable
 	protected int numFin;
 	
 	/**
-	 * La condition d'exécution
+	 * La condition d'exÃ©cution
 	 */
 	protected String condition;
 	
 	/**
 	 * <b>Constructeur de structure</b>
 	 * @param condition
-	 * 	La condition d'exécution
+	 * 	La condition d'exÃ©cution
 	 */
 	public Structure( int numDebut, String condition )
 	{
@@ -39,7 +39,7 @@ public abstract class Structure implements IExecutable
 	}
 	
 	/**
-	 * modificateur du numéro de fin
+	 * modificateur du numÃ©ro de fin
 	 */
 	public void setNumFin( int value )
 	{

@@ -7,7 +7,7 @@ import bsh.Interpreter;
 import fr.pcentreprise.pcode.controleur.Controleur;
 
 /**
- * La classe Interpreteur permet de lire une expression (boolean, mathématique ou encore de chaine )
+ * La classe Interpreteur permet de lire une expression (boolean, mathÃ©matique ou encore de chaine )
  * @author Equipe 11
  * @version 1.0, 2018-12-17
  */
@@ -32,7 +32,7 @@ public class Interpreteur
 				exp = exp.substring( exp.indexOf( m.group(1) ) + m.group(1).length()+1 );
 			}else {
 				
-				p = Pattern.compile( "^©" );
+				p = Pattern.compile( "^Â©" );
 				m = p.matcher( exp );
 				
 				if( m.find() )
@@ -41,11 +41,11 @@ public class Interpreteur
 					exp = exp.substring( 1 );
 				}else {
 					
-					p = Pattern.compile( "^([()×+/-<>=,0-9]+)" );
+					p = Pattern.compile( "^([()Ã—+/-<>=,0-9]+)" );
 					m = p.matcher( exp );
 					if( m.find() )
 					{
-						expFinal += m.group(1).replaceAll( "×" , "*" ).replaceAll(",", ".");
+						expFinal += m.group(1).replaceAll( "Ã—" , "*" ).replaceAll(",", ".");
 						exp = exp.substring( m.group(1).length() );
 						
 					}else {
@@ -75,12 +75,12 @@ public class Interpreteur
 	
 	public static void main(String[] args)
 	{
-		System.out.println("Résultat: " + resoudre( "\"Ceci est une chaine de caractere. Elle ne doit pas etre interpreté. Voila.\"" ) );
-		System.out.println("Résultat: " + resoudre( "\"Ceci est une © chaine de caractere.\" © \" Elle ne doit pas etre interpreté. Voila.\"" ) );
-		System.out.println("Résultat: " + resoudre( "\"Ceci est une © chaine de caractere.\" © (8+5) " ) );
-		System.out.println("Résultat: " + resoudre( "5,0 == 5 " ) );
-		System.out.println("Résultat: " + resoudre( "(4+5)+6×6 +( 7×(8×6))" ) );
-		System.out.println("Résultat: " + resoudre( "x" ) );
-		System.out.println("Résultat: " + resoudre( "x >= 5 " ) );
+		System.out.println("RÃ©sultat: " + resoudre( "\"Ceci est une chaine de caractere. Elle ne doit pas etre interpretÃ©. Voila.\"" ) );
+		System.out.println("RÃ©sultat: " + resoudre( "\"Ceci est une Â© chaine de caractere.\" Â© \" Elle ne doit pas etre interpretÃ©. Voila.\"" ) );
+		System.out.println("RÃ©sultat: " + resoudre( "\"Ceci est une Â© chaine de caractere.\" Â© (8+5) " ) );
+		System.out.println("RÃ©sultat: " + resoudre( "5,0 == 5 " ) );
+		System.out.println("RÃ©sultat: " + resoudre( "(4+5)+6Ã—6 +( 7Ã—(8Ã—6))" ) );
+		System.out.println("RÃ©sultat: " + resoudre( "x" ) );
+		System.out.println("RÃ©sultat: " + resoudre( "x >= 5 " ) );
 	}
 }

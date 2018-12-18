@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * La classe Donnees contient les données du programme
+ * La classe Donnees contient les donnÃ©es du programme
  * @author  Equipe 11
  * @version 1.0, 2018-12-17
  */
@@ -25,7 +25,7 @@ public class Donnees
 	}
 	
 	/**
-	 * Méthode qui créer une nouvelle variable
+	 * MÃ©thode qui crÃ©er une nouvelle variable
 	 */
 	public void creer( String var, String type )
 	{
@@ -34,7 +34,7 @@ public class Donnees
 			{
 				case "entier"    : this.listVariables.put( var, new Integer(0)     ); break;
 				case "reel"      : this.listVariables.put( var, new Double(0.0)    ); break;
-				case "boolean"   : this.listVariables.put( var, new Boolean(false) ); break;
+				case "booleen"   : this.listVariables.put( var, new Boolean(false) ); break;
 				case "caractere" : this.listVariables.put( var, new Character(' ') ); break;
 				case "chaine"    : this.listVariables.put( var, new String("")     ); break;
 			}
@@ -43,7 +43,7 @@ public class Donnees
 	}
 	
 	/**
-	 * Méthode qui affecte une nouvelle valeur à une variable
+	 * MÃ©thode qui affecte une nouvelle valeur Ã  une variable
 	 */
 	public void affecter( String var, Object valeur )
 	{
@@ -57,7 +57,7 @@ public class Donnees
 	}
 	
 	/**
-	 * @return la valeur de la variable entrée en parametre
+	 * @return la valeur de la variable entrÃ©e en parametre
 	 */
 	public Object get( String var )
 	{

@@ -1,6 +1,5 @@
 package fr.pcentreprise.pcode.metier.commandes;
 
-import fr.pcentreprise.pcode.controleur.Controleur;
 import fr.pcentreprise.pcode.metier.IExecutable;
 
 /**
@@ -12,19 +11,19 @@ public class Affecter implements IExecutable
 {
 	
 	/**
-	 * nom de la variable à modifier
+	 * nom de la variable Ã  modifier
 	 */
 	private String var;
 	
 	/**
-	 * valeur à affecter
+	 * valeur Ã  affecter
 	 */
-	private Object valeur;
+	protected Object valeur;
 	
 	/**
 	 * Constructeur
 	 * @param var
-	 *     nom de la variable à modifier
+	 *     nom de la variable Ã  modifier
 	 * @param valeur
 	 *     valeur a affecter
 	 */
@@ -34,6 +33,10 @@ public class Affecter implements IExecutable
 		this.valeur = valeur;
 	}
 	
+	protected Affecter( String var )
+	{
+		this.var = var;
+	}
 	
 	@Override
 	public void executer()

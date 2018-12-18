@@ -1,8 +1,9 @@
-import java.io.File;
+package fr.pcentreprise.pcode.metier;
+
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-package fr.pcentreprise.pcode.metier;
 import fr.pcentreprise.pcode.metier.commandes.Affecter;
 import fr.pcentreprise.pcode.metier.commandes.Ecriture;
 import fr.pcentreprise.pcode.metier.structures.FinStructure;
@@ -33,12 +33,12 @@ public class Code
 	private List<String> listLignes;
 	
 	/**
-	 * Liste des commandes du programme associées à leur ligne
+	 * Liste des commandes du programme associÃ©es Ã  leur ligne
 	 */
 	private Map<Integer, IExecutable> listCommandes;
 	
 	/**
-	 * Attribut contenant les données
+	 * Attribut contenant les donnÃ©es
 	 */
 	private Donnees donnees;
 	
@@ -50,25 +50,25 @@ public class Code
 	private List<Integer> deroulement;
 	
 	/**
-	 * Fabrique qui vérifie la validité du programme à interpréter
+	 * Fabrique qui vÃ©rifie la validitÃ© du programme Ã  interprÃ©ter
 	 */
-	public static Code fabriqueCode(File fichier)
+	/*public static Code fabriqueCode(String nomFichier)
 	{
 		try
 		{
 			String sRet = "" ;
 			
-			InputStream ipsP = this.getClass().getResourceAsStream(fichier);
+			InputStream ipsP = .getClass().getResourceAsStream(nomFichier);
 			InputStreamReader ipsrP = new InputStreamReader(ipsP);
 			BufferedReader fichierP = new BufferedReader(ipsrP);
 			
-			String partie = "Algo"; //prend la valeur Algo puis Constantes puis Variables et enfin Programme pour définir les différentes parties du programme
+			String partie = "Algo"; //prend la valeur Algo puis Constantes puis Variables et enfin Programme pour dÃ©finir les diffÃ©rentes parties du programme
 			String ligne  = null  ;
 			
 			while ((ligne = fichierP.readLine()) != null)
 			{
 				sRet += ligne + "\n";
-			
+			}
 				switch( partie )
 				{
 					case "Algo"      : if( ligne.equals( "constante:" ) ) partie = "Constante"; break ;
@@ -77,7 +77,7 @@ public class Code
 					case "Programme" : if( ligne.equals( "FIN"        ) ) partie = "Fini"     ; break ;
 				}
 			}
-			sc.close();
+			fichierP.close();
 			
 			if (partie.equals("Fini"))
 				return new Code ( sRet );
@@ -85,12 +85,12 @@ public class Code
 				return null;
 		}
 		catch (Exception exc) {}
-	}
+	}*/
 	
 	/**
-	 * Constructeur qui construit le code à partir d'une chaine de caractère envoyée par la fabriqueCode
+	 * Constructeur qui vÃ©rifie si le programme est bien Ã©crit Ã  partir d'une chaine de caractere
 	 */
-	private Code( String fichier )
+	public Code( String nomFichier )
 	{
 		this.donnees       = new Donnees();
 		this.listCommandes = new HashMap<Integer, IExecutable>();
@@ -98,26 +98,38 @@ public class Code
 		this.ligneExec     = 0;
 		this.deroulement   = new ArrayList<Integer>();
 		
-		Scanner sc = new Scanner( fichier );
-		String partie = "Algo"; //prend la valeur Algo puis Constantes puis Variables et enfin Programme pour définir les différentes parties du programme
-		
 		Stack<Structure> ouvertureStructures = new Stack<Structure>();
-		while( sc.hasNext() )
+		
+		
+		try
 		{
-			String s = sc.nextLine();
-			switch( partie )
-			{
-				case "Algo"      : if( s.equals( "constante:" ) ) partie = "Constante"; break;
-				case "Constante" : if( s.equals( "variable:"  ) ) partie = "Variable" ; break;
-				case "Variable"  : if( s.equals( "DEBUT"      ) ) partie = "Programme"; else this.creerVariable  ( s ); break;
-				case "Programme" : if( s.equals( "FIN"        ) ) partie = "Fini"     ; else this.creerExecutable( s, ouvertureStructures ); break;
-			}
+			InputStream ipsP = this.getClass().getResourceAsStream("/" + nomFichier);
+			InputStreamReader ipsrP = new InputStreamReader(ipsP);
+			BufferedReader fichierP = new BufferedReader(ipsrP);
 			
-			this.listLignes.add( s );
-			this.ligneExec++;
+			String ligne  = null  ;
+			String partie = "Algo"; //prend la valeur Algo puis Constantes puis Variables et enfin Programme pour dÃ©finir les diffÃ©rentes parties du programme
+		
+			while ((ligne = fichierP.readLine()) != null)
+			{
+				ligne = ligne.replaceAll( "\t", "    " );
+			
+				switch( partie )
+				{
+					case "Algo"      : if( ligne.equals( "constante:" ) ) partie = "Constante"; break;
+					case "Constante" : if( ligne.equals( "variable:"  ) ) partie = "Variable" ; break;
+					case "Variable"  : if( ligne.equals( "DEBUT"      ) ) partie = "Programme"; else this.creerVariable  ( ligne ); break;
+					case "Programme" : if( ligne.equals( "FIN"        ) ) partie = "Fini"     ; else this.creerExecutable( ligne, ouvertureStructures ); break;
+				}
+				
+				this.listLignes.add( ligne );
+				
+				this.ligneExec++;
+			}
+			fichierP.close();
+			this.ligneExec = 0;
 		}
-		sc.close();
-		this.ligneExec = 0;
+		catch (Exception exc) {}
 		
 		/*for( int i=0; i<this.listLignes.size(); i++ )
 			if( this.listCommandes.get(i) != null )
@@ -136,7 +148,7 @@ public class Code
 	}
 	
 	/**
-	 * @return la ligne avec le numero passé en parametre
+	 * @return la ligne avec le numero passÃ© en parametre
 	 */
 	public String getLigne( int num )
 	{
@@ -157,7 +169,7 @@ public class Code
 	}
 	
 	/**
-	 * méthode utilisé par les IExecutables pour récupérer la ligneExec
+	 * mÃ©thode utilisÃ© par les IExecutables pour rÃ©cupÃ©rer la ligneExec
 	 */
 	public int getLigneExec()
 	{
@@ -165,7 +177,7 @@ public class Code
 	}
 	
 	/**
-	 * méthode utilisé par les IExecutables pour modifier la ligneExec
+	 * mÃ©thode utilisÃ© par les IExecutables pour modifier la ligneExec
 	 */
 	public void setLigneExec( int ligneExec )
 	{
@@ -187,7 +199,7 @@ public class Code
 	}
 	
 	/**
-	 * créé les variables dans les Données
+	 * crÃ©Ã© les variables dans les DonnÃ©es
 	 */
 	public void creerVariable( String expression )
 	{
@@ -203,7 +215,7 @@ public class Code
 	}
 	
 	/**
-	 * créé un IExecutable en fonction du @param
+	 * crÃ©Ã© un IExecutable en fonction du @param
 	 */
 	public void creerExecutable( String expression, Stack<Structure> ouvertureStructure )
 	{
@@ -217,11 +229,19 @@ public class Code
 				this.listCommandes.put(this.ligneExec, new Affecter( var, obj ));
 			}
 			
+			/*if( exp.startsWith( "lire" ) )
+			{
+				Pattern p = Pattern.compile( "[(](.*)[)]$" );
+				Matcher m = p.matcher( exp );
+				if( m.find() )
+					
+			}*/
+			
 			if( exp.trim().startsWith("ecrire") )
 			{
 				Pattern p = Pattern.compile( "[(](.*)[)]$" );
 				Matcher m = p.matcher( exp );
-				while( m.find() )
+				if( m.find() )
 					exp = m.group( 1 ).trim();
 				this.listCommandes.put(this.ligneExec, new Ecriture( exp ));
 			}

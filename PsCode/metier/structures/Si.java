@@ -6,7 +6,7 @@ import fr.pcentreprise.pcode.metier.Interpreteur;
 public class Si extends Structure {
 	
 	/**
-	 * numéro de la ligne sinon ( vaut 0 si il n'y a pas de sinon )
+	 * numÃ©ro de la ligne sinon ( vaut 0 si il n'y a pas de sinon )
 	 */
 	private int numSinon;
 	

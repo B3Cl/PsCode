@@ -1,6 +1,6 @@
 package fr.pcentreprise.pcode.metier.commandes;
 
-import fr.pcentreprise.pcode.metier.Console;
+import fr.pcentreprise.pcode.metier.TraceExec;
 import fr.pcentreprise.pcode.metier.IExecutable;
 import fr.pcentreprise.pcode.metier.Interpreteur;
 
@@ -12,14 +12,14 @@ import fr.pcentreprise.pcode.metier.Interpreteur;
 public class Ecriture implements IExecutable
 {
 	/**
-	 * Expression à écrire
+	 * Expression Ã  Ã©crire
 	 */
 	private String expression;
 	
 	/**
 	 * Constructeur
 	 * @param expression
-	 *    expression à écrire
+	 *    expression Ã  Ã©crire
 	 */
 	public Ecriture( String expression )
 	{
@@ -29,7 +29,7 @@ public class Ecriture implements IExecutable
 	@Override
 	public void executer()
 	{
-		Console.getInstance().add( (String)Interpreteur.resoudre(this.expression) );
+		TraceExec.getInstance().add( (String)Interpreteur.resoudre(this.expression) );
 		IExecutable.code.setLigneExec( IExecutable.code.getLigneExec()+1 );
 	}
 	
