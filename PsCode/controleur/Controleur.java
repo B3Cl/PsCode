@@ -1,10 +1,8 @@
 package fr.pcentreprise.pcode.controleur;
 
 import fr.pcentreprise.pcode.metier.Code;
-import fr.pcentreprise.pcode.metier.Console;
-import fr.pcentreprise.pcode.metier.Donnees;
-import fr.pcentreprise.pcode.metier.Interpreteur;
-import fr.pcentreprise.pcode.metier.commandes.Affecter;
+import fr.pcentreprise.pcode.metier.TraceExec;
+import fr.pcentreprise.pcode.vue.Console;
 
 /**
  * La classe Controleur permet la gestion de l'ensemble du programme
@@ -16,7 +14,7 @@ public class Controleur
 	/**
 	 * Instance du controleur
 	 */
-	private static Controleur instance = new Controleur();
+	private static Controleur instance;
 	
 	/**
 	 * Attribut contenant le code
@@ -31,13 +29,13 @@ public class Controleur
 		return this.code;
 	}
 	
-	private Controleur()
+	private Controleur(String fichierAlgo)
 	{
-		this.code = Code.fabriqueCode();
+		this.code = new Code(fichierAlgo);
 	}
 	
 	/**
-	 * Méthode static permettant de récuperer l'instance de l'interpreteur
+	 * MÃ©thode static permettant de rÃ©cuperer l'instance de l'interpreteur
 	 */
 	public static Controleur getInstance()
 	{
@@ -46,8 +44,10 @@ public class Controleur
 	
 	public static void main(String[] args)
 	{
+		Controleur.instance = new Controleur(args[0]);
+		
 		while( instance.code.next() ) {}
-		System.out.println( Console.getInstance() );
-		System.out.println( instance.code.getDonnees() );
+		System.out.println(Console.afficher());
+		
 	}
 }
